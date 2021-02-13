@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {% include 'navigation.html' %}
+
+    <div class="container h-100">
+        <div class="row justify-content-center">
+            <div class="col-8">
+
+                    <div class="display-3">{% block title %}evaluate{% endblock title %}</div>
+                    <br>
+                    <p>Here you can evaluate the quality of the predictions. Choose a project and model for which to evaluate previously executed predictions. Evaluations will be part of the file you can download under projects.</p>
+                    <br>
+
+                    <form  action="" method="post" role="form">
+                        {{ form.csrf_token }}
+                        {{ form.project_id.label(class_='sr-only')}}
+                        {{ form.project_id(class_='custom-select') }}
+                        {% if form.project_id.errors %}
+                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                {% for error in form.project_id.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        {% endif %}
+                        <br><br>
+                        {{ form.predictionmodel_id.label(class_='sr-only')}}
+                        {{ form.predictionmodel_id(class_='custom-select') }}
+                        <br><br><br>
+                        <div class="row justify-content-center">
+                            {{ form.submit(class_='btn btn-outline-secondary') }}
+                        </div>
+                    </form>
+                <br>
+            </div>
+
+
+        </div>
+    </div>
+
+
+
+{% endblock content %}
+
+{% block script %}
+{% endblock script %}
+
+

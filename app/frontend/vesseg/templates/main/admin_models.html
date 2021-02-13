@@ -1,0 +1,77 @@
+{% extends 'main/base.html' %}
+
+{% block maincontent %}
+
+    <div class="display-4">{% block title %}model admin{% endblock title %}</div>
+
+    <br>
+    <hr>
+
+    <form action="" method="post" role="form">
+        {{ form.csrf_token }}
+        <p>
+            {{ form.name.label }} {{ form.name(size=10, class_='form-control') }}
+        </p>
+        <p>
+            {{ form.container.label }} {{ form.container(size=10, class_='form-control') }}
+        </p>
+        <p>
+            {{ form.model_path.label }} {{ form.model_path(size=10, class_='form-control') }}
+        </p>
+        <p>
+            {{ form.additional_arguments.label }} {{ form.additional_arguments(size=10, class_='form-control') }}
+        </p>
+        {{ form.submit( class_='btn btn-outline-secondary') }}
+    </form>   
+    
+
+
+    {% if form.name.errors %}
+    <br>
+    <br>
+        {% for error in form.name.errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    <br>
+    <br>
+    {% endif %}
+
+    <br>
+    <hr>
+    
+    <br>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">model</th>
+                <th scope="col">container</th>
+                <th scope="col">path</th>
+                <th scope="col">additional arguments</th>
+                <th scope="col">delete</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for p in pms %}
+            <tr>
+                <th scope="row"> {{ loop.index }}</th>
+                <td>{{ p.name }}</td>
+                <td>{{ p.container }}</td>
+                <td>{{ p.model_path }}</td>
+                <td>{{ p.additional_arguments }}</td>
+                <td><a href="{{url_for('main.admin_models_delete', pm_id=p.id)}}">delete</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+
+{% endblock maincontent %}
+{% block script %}
+{% endblock script %}

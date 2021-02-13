@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}login{% endblock title %}
+{% block content %}
+
+    <div class="container h-100">
+    <div class="row h-100 justify-content-center align-items-center">
+        <div class="col-md-4">
+            <div class="row justify-content-center">
+                <img src="{{ url_for('static', filename='title.png') }}" alt="" style="border-radius: 50%; border: 3px black solid">
+            </div>
+            <br>
+            <br>
+            <div class="row justify-content-center">
+                <div class="display-1">vesseg</div>
+            </div>
+            <br>
+            <form  action="" method="post" role="form">
+            {{ form.csrf_token }}
+            <div class="form-group">
+                {{ form.username.label(class_='sr-only') }}
+                {{ form.username(class_='form-control', placeholder='username') }}
+                <br>
+                {{ form.password.label(class_='sr-only') }}
+                {{ form.password(class_='form-control', placeholder='password') }}
+               <br>
+                <div class="row justify-content-center">
+                    {{ form.submit.label(class_='sr-only') }}
+                    {{ form.submit(class_='btn btn-outline-secondary mx-2') }}
+                    <a href="{{ url_for('auth.signup') }}" class="btn btn-outline-secondary mx-2" role="button">register</a>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+    </div>
+
+{% endblock content %}

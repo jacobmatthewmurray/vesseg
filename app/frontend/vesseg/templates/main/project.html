@@ -1,0 +1,62 @@
+{% extends 'main/base.html' %}
+
+{% block maincontent %}
+
+
+    <div class="display-3">{% block title %}project{% endblock title %}</div>
+    <br>
+    <p>Enter a project name and click 'create' to begin a new project. Hit 'delete' in project list to delete project, <strong>including all uploaded data</strong>.</p>
+    <br>
+
+    <form  action="" method="post" role="form">
+        {{ form.csrf_token }}
+        <div class="form-row">
+            <div class="col flex-grow-1">
+                {{ form.project.label(class_='sr-only')}}
+                {{ form.project(class_='form-control', placeholder='project name') }}
+            </div>
+            {{ form.submit(class_="btn btn-outline-secondary")}}
+        </div>
+    </form>
+    <br>
+
+    {% if form.project.errors %}
+        {% for error in form.project.errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+
+    <br><br>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">project</th>
+                <th scope="col">created</th>
+                <th scope="col">download</th>
+                <th scope="col">delete</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for p in projects %}
+            <tr>
+                <th scope="row"> {{ loop.index }}</th>
+                <td>{{ p.project }}</td>
+                <td>{{ p.created_on.strftime('%Y-%m-%d') }}</td>
+                <td><a href="{{ url_for('main.download_project', project_id=p.id) }}">download</a></td>
+                <td><a href="{{ url_for('main.project_delete', project_id=p.id) }}">delete</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock maincontent %}
+
+{% block script %}
+{% endblock script %}

@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}evaluation{% endblock title %}
+
+{% block content %}
+
+    {% include 'navigation.html' %}
+
+
+    <div class="container-fluid h-100">
+        <br>
+        <div class="row justify-content-center">
+            <p>Evaluating predictions for images in project <strong>{{ project_name }}</strong> predicted with <strong>{{ predictionmodel_name }}</strong>.</p>
+        </div>
+        <div class="row justify-content-center">
+            <p>Input image shown on left, prediction on right. Blue overlay signifies plaque, yellow signifies lumen, and purple signifies background.</p>
+        </div>
+        <div class="row justify-content-center">
+            <p id="rating-counter"></p>
+        </div>
+        <br>
+        <div class="row justify-content-center align-items-center">
+            <button id="prev" class="btn btn-outline-secondary mx-3">Prev</button>
+            <img src="" alt="" id="plain-img" class="mx-3"/>
+            <img src="" alt="" id="overlay-img" class="mx-3"/>
+            <button id="next" class="btn btn-outline-secondary mx-3">Next</button>
+        </div>
+        <br>
+        <div class="row justify-content-center">
+            <button class="rater-button btn btn-outline-secondary mx-5">1</button>
+            <button class="rater-button btn btn-outline-secondary mx-5">2</button>
+            <button class="rater-button btn btn-outline-secondary mx-5">3</button>
+            <button class="rater-button btn btn-outline-secondary mx-5">4</button>
+            <button class="rater-button btn btn-outline-secondary mx-5">5</button>
+        </div>
+        <br>
+        <div class="row justify-content-center">
+                <p>Rate prediction from 1 (poor) to 5 (excellent).</p>
+        </div>
+        <div class="row justify-content-center">
+                <p>Current rating:</p><p id="current-rating"></p>
+        </div>
+    </div>
+
+
+
+{% endblock content %}
+
+{% block script %}
+    <script>
+
+        let evaluation = {{ evaluation | tojson }};
+        let current_evaluation = 0;
+        let csrf_token = "{{ csrf_token() }}";
+
+        loadImage = function(i){
+            if (current_evaluation == evaluation.length - 1 && i == 1) {
+                alert('This is the last prediction.');
+            } else if (current_evaluation == 0 && i == -1) {
+                alert('This is the first prediction.');
+            } else {
+                current_evaluation += i;
+                $('#plain-img').attr('src', '/data/image' + evaluation[current_evaluation]['image_path'])
+                $('#overlay-img').attr('src', '/data/image' + evaluation[current_evaluation]['mask_path'])
+                $('#rating-counter').text(String(current_evaluation + 1) + '/' + String(evaluation.length));
+                $('#current-rating').text(evaluation[current_evaluation]['current_evaluation'])
+            };
+        };
+
+        loadImage(0);
+
+
+        $('#next').click(function () {loadImage(1)});
+        $('#prev').click(function () {loadImage(-1)});
+
+        $('.rater-button').click(function () {
+
+            $.ajax({
+                beforeSend: function(xhr, settings) {
+                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                    }
+                },
+                type: "POST",
+                url: '/data/evaluation',
+                data: {mask_id: evaluation[current_evaluation]['mask_id'], new_evaluation: $(this).text()},
+                success: function (data) {
+                    evaluation[current_evaluation]['current_evaluation'] = $.parseJSON(data)['evaluation'];
+                    $('#current-rating').text(evaluation[current_evaluation]['current_evaluation'])
+                    loadImage(1);
+                }
+            })
+        });
+
+
+    </script>
+{% endblock script %}
+
+

@@ -1,0 +1,35 @@
+{% extends 'main/base.html' %}
+
+{% block maincontent %}
+
+
+    <div class="display-4">{% block title %}project admin{% endblock title %}</div>
+    <br>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">project</th>
+                <th scope="col">user</th>
+                <th scope="col">created</th>
+                <th scope="col">delete</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for p in projects %}
+            <tr>
+                <th scope="row"> {{ loop.index }}</th>
+                <td>{{ p.Project.project }}</td>
+                <td>{{ p.User.username}}</td>
+                <td>{{ p.Project.created_on.strftime('%Y-%m-%d') }}</td>
+                <td><a href="{{ url_for('main.admin_projects_delete', project_id=p.Project.id) }}">delete</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+
+{% endblock maincontent %}
+{% block script %}
+{% endblock script %}

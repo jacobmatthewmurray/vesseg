@@ -1,0 +1,87 @@
+{% extends 'main/base.html' %}
+
+{% block maincontent %}
+
+
+    <div class="display-3">{% block title %}preprocess{% endblock title %}</div>
+    <br>
+    <p>First, choose a project for which you want to preprocess <strong>previously uploaded</strong> images. In the second drop-down, choose preprocessing routine (currently there is only one). Beware, preprocessing is conducted in the background and does not complete instantaneously. Go to Tasks to check on progress.</p>
+    <br>
+
+    <form  action="" method="post" role="form">
+        {{ form.csrf_token }}
+        {{ form.project_id.label(class_='sr-only')}}
+        {{ form.project_id(class_='custom-select') }}
+        <br><br>
+        {{ form.preprocess.label(class_='sr-only')}}
+        {{ form.preprocess(class_='custom-select') }}
+        <br><br><br>
+        <div class="row justify-content-center">
+            {{ form.submit(class_='btn btn-outline-secondary') }}
+        </div>
+    </form>
+
+    <br><br><br>
+
+    {% with messages = get_flashed_messages(category_filter=['preprocess']) %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    {% if tasks %}
+                    <br><br>
+                    <p>Progress:</p>
+                    {% for task in tasks %}
+                        <div class="progress">
+                          <div class="progress-bar" id="{{ task.task_id }}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                            <span class="sr-only"></span>
+                          </div>
+                        </div>
+                        <br>
+                    {% endfor %}
+                    {% endif %}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+{% endblock maincontent %}
+
+{% block script %}
+    <script>
+        {% if tasks %}
+
+            let tasks = [];
+            let progress = [];
+            {% for t in tasks %}
+                tasks.push('{{ t.task_id }}');
+                progress.push(0);
+            {% endfor %}
+            const arrSum = arr => arr.reduce((a,b) => a + b, 0);
+            let tid = setInterval(updateStatus, 500);
+
+            function abortTimer() {
+                clearInterval(tid);
+            };
+
+            function updateStatus(){
+                for (i=0; i<tasks.length; i++) {
+                    $.get('/tasks/status', {task_id: tasks[i]}, function(data){
+                        let my_progress = $.parseJSON(data)['progress'];
+                        let task_id = $.parseJSON(data)['task_id'];
+                        document.getElementById(task_id).setAttribute('aria_valuenow', my_progress);
+                        document.getElementById(task_id).style.width =  my_progress +'%';
+                    });
+                    progress[i] = parseInt(document.getElementById(tasks[i]).getAttribute('aria_valuenow'));
+                }
+                if (arrSum(progress) == tasks.length*100) {
+                    abortTimer()
+                }
+            }
+
+        {% endif %}
+    </script>
+{% endblock script %}

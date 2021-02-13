@@ -1,0 +1,17 @@
+{% extends 'main/base.html' %}
+
+{% block maincontent %}
+
+
+    <div class="display-3">{% block title %}admin{% endblock title %}</div>
+    <br>
+    <ul>
+        <li><a href="{{ url_for('main.admin_projects')}}">projects</a></li>
+        <li><a href="{{ url_for('main.admin_models')}}">models</a></li>
+    </ul>
+    <br>
+
+
+{% endblock maincontent %}
+{% block script %}
+{% endblock script %}

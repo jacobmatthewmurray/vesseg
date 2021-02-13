@@ -1,0 +1,75 @@
+{% extends 'main/base.html' %}
+
+{% block maincontent %}
+    <div class="display-3">{% block title %}tasks{% endblock title %}</div>
+    <br>
+    <p>This page shows all tasks that you currently have open.</p>
+    <br>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">name</th>
+                <th scope="col">created on</th>
+                <th scope="col">progress</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for t in tasks %}
+            <tr>
+                <th scope="row"> {{ loop.index }}</th>
+                <td>{{ t.name }}</td>
+                <td>{{ t.created_on.strftime('%Y-%m-%d') }}</td>
+                <td>
+                   <div class="progress">
+                      <div class="progress-bar" id="{{ t.id }}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                        <span class="sr-only"></span>
+                      </div>
+                   </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+
+{% endblock maincontent %}
+
+{% block script %}
+    <script>
+        {% if tasks %}
+            let tasks = [];
+            let progress = [];
+            {% for t in tasks %}
+                tasks.push('{{ t.id }}');
+                progress.push(0);
+            {% endfor %}
+            let num_tasks = tasks.length;
+            const arrSum = arr => arr.reduce((a,b) => a + b, 0);
+
+            let tid = setInterval(updateStatus, 1000);
+
+            function abortTimer() {
+                clearInterval(tid);
+            };
+
+            function updateStatus(){
+                for (i = 0; i < num_tasks; i++){
+                    $.get('/tasks/status', {task_id: tasks[i]}, function(data){
+                        let my_progress = $.parseJSON(data)['progress'];
+                        let my_task = $.parseJSON(data)['task_id'];
+                        progress[i] = parseInt(my_progress);
+                        $('#'+ my_task).attr('aria-valuenow', my_progress);
+                        $('#'+ my_task).attr('style', 'width:' + my_progress +'%');
+                    });
+                    progress[i] = parseInt(document.getElementById(tasks[i]).getAttribute('aria_valuenow'));
+                }
+                if (arrSum(progress) == num_tasks*100) {
+                    abortTimer()
+                };
+            };
+
+        {% endif %}
+    </script>
+{% endblock script %}
