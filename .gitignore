@@ -23,8 +23,9 @@ htmlcov/
 .coverage.*
 *,cover
 
-# custon
+# custom
 __pycache__/
 data/
 docker-compose.yml
 
+analysis/output/
