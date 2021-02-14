@@ -1,15 +1,11 @@
-FROM python:3.7-slim
+FROM python:3.8-slim
+COPY ./frontend/requirements.txt /frontend/requirements.txt
+RUN pip install -r /frontend/requirements.txt && pip install gunicorn
 
-RUN mkdir /vesseg_data /vesseg_models /vesseg_db
-WORKDIR /vesseg_app
-COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt && pip install gunicorn
-
-
-COPY vesseg vesseg
-COPY config.py .
-
-ENV FLASK_ENV=production UPLOAD_PATH=/vesseg_data MODEL_PATH=/vesseg_models DB_PATH=/vesseg_db
-
-ENTRYPOINT ["gunicorn", "-b", ":5555", "--access-logfile", "-", "--error-logfile", "-", "--timeout", "300", "vesseg:create_app()"]
+RUN mkdir /data
+COPY ./frontend/vesseg /frontend/vesseg
+COPY ./frontend/config.py /frontend/config.py
+WORKDIR /frontend
+ENV FLASK_ENV=production
+ENTRYPOINT ["gunicorn", "-b", ":8000", "--timeout", "300", "vesseg:create_app()"]
 
