@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # 1. SSH into droplet
 # 2. Setup user
 # 3. Copy ssh key into /home/user/.ssh/authorized_keys
@@ -25,17 +26,3 @@ ufw default allow outgoing
 ufw allow ssh
 echo "y" | ufw enable
 ufw allow 443
-
-docker run -d \
-  --name=swag \
-  --cap-add=NET_ADMIN \
-  -e PUID=1000 \
-  -e PGID=1000 \
-  -e TZ=Europe/Berlin \
-  -e URL=vesseg.online \
-  -e VALIDATION=http \
-  -p 443:443 \
-  -p 80:80 \
-  -v /path/to/appdata/config:/config \
-  --restart unless-stopped \
-  linuxserver/swag
