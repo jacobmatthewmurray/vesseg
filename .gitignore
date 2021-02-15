@@ -29,3 +29,5 @@ data/
 docker-compose.yml
 
 analysis/output/
+paper/
+analysis/

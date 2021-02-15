@@ -10,7 +10,7 @@ from io import BytesIO
 import requests
 import zipfile
 from functools import wraps
-from flask import render_template, request, flash, redirect, url_for, current_app, send_file, jsonify
+from flask import render_template, request, flash, redirect, url_for, current_app, send_file, jsonify, send_from_directory
 from flask_login import current_user
 from vesseg import db
 from vesseg.main import bp
