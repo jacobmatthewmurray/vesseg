@@ -19,8 +19,8 @@ ___
 ## Docker Set-Up
 Exact instructions on how to set-up `Docker` in different computing environments can be found [here](https://docs.docker.com). The following is only meant to serve as a quick-start guide and pertains to Ubuntu, for machines for which you have administrator rights (`sudo` privileges). The following two steps are needed.
 
-1. [Set-up Docker community edition](#https://docs.docker.com/engine/install/ubuntu/)
-2. [Set-up Docker compose](#https://docs.docker.com/compose/install/)
+1. [Set-up Docker community edition](https://docs.docker.com/engine/install/ubuntu/)
+2. [Set-up Docker compose](https://docs.docker.com/compose/install/)
 
 ## Running Vesseg Locally
 1. Clone this repository to your local machine that has `Docker` and `Docker compose` installed. 
