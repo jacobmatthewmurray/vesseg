@@ -130,7 +130,7 @@ def converter(input_directory, output_directory, conversion_file_type: str, save
     Path(img_dir).mkdir(parents=True, exist_ok=True)
     Path(meta_dir).mkdir(parents=True, exist_ok=True)
 
-    jb.start_vm(class_path=bf.JARS, max_heap_size="2G")
+    jb.start_vm(class_path=bf.JARS, max_heap_size="8G")
     make_logger()
     files = walk_directory_to_list(input_directory, lambda x: x.endswith(conversion_file_type) and 'temp' not in x)
 
