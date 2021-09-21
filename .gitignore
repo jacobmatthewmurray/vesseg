@@ -26,7 +26,6 @@ htmlcov/
 # custom
 __pycache__/
 data/
-docker-compose.yml
 
 analysis/output/
 paper/

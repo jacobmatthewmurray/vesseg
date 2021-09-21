@@ -1,0 +1,44 @@
+version: '3'
+services:
+  frontend:
+    image: frontend:latest
+    # Important to map data directory
+    volumes:
+      - "/Users/jacobmurray/projects/vesseg/data:/Users/jacobmurray/projects/vesseg/data"
+    # Important to set a secret secret key.
+    # Data path should match above path.
+    environment:
+      - SECRET_KEY='example_secret_key'
+      - DATA_PATH=/Users/jacobmurray/projects/vesseg/data
+      - REDIS_URL=redis://redis:6379/0
+    ports: 
+      - "8000:8000"
+  docker-launcher:
+    image: docker_launcher:latest
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    command: ["-u", "redis://redis:6379/0",  "vesseg"]
+    depends_on: 
+      - redis
+    restart: unless-stopped
+  redis: 
+    image: redis:latest
+
+  # IF RUNNING ON A SERVER
+  # sawg:
+  #   image: linuxserver/swag
+  #   cap_add: 
+  #     - NET_ADMIN
+  #   environment: 
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=Europe/Berlin 
+  #     - URL= add your domain here, i.e., mydomain.com
+  #     - VALIDATION=http
+  #     - SUBDOMAINS=www,
+  #   ports: 
+  #     - 443:443
+  #     - 80:80
+  #   volumes: 
+  #     - for example: /server/ngnix/config:/config
+  #   restart: unless-stopped
