@@ -52,8 +52,8 @@ docker-compose up
 To add a model, you must have admin privileges to your locally running vesseg platform. The first user to create an account automatically gains admin status. Assigning admin status to other users is a feature that will be added in coming iterations.
 
 1. Download models:
-    1. Pretrained `fastai` model, here.
-    2. Pretrained `nnunet` model, here.
+    1. Pretrained `fastai` model, [here](https://vesseg.online/download/fastai_01.zip).
+    2. Pretrained `nnunet` model, [here](https://vesseg.online/download/nnunet112.zip).
 2. Once downloaded, extract the models into a "models" subdirectory of the "data" directory as specified in docker-compose file. 
 3. Now that the models are physically available to the platform they still need to be linked up. In the admin area of the platform (after log in, click on your username in the top right-hand corner) select models. Add the models as follows:
     1. fastai: 

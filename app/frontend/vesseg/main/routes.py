@@ -420,3 +420,9 @@ def admin_models_delete():
     db.session.commit()
     return redirect(url_for('main.admin_models'))
 
+
+@bp.route('/download/<filename>', methods=['GET', 'POST'])
+def download(filename):
+    model_download_path = os.path.join(get_models_path(), 'download')
+    return send_from_directory(model_download_path, filename, as_attachment=True)    
+
