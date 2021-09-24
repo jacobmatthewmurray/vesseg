@@ -5,9 +5,6 @@
 This repository contains the source files associated with the _vesseg_ (*ves*sel *seg*mentation) platform. They can be downloaded for set-up with `Docker` both locally and on a server. The vesseg platform is described in: 
 
 >*Murray JM, Pfeffer P, Seifert R, et al. Vesseg: An Open-Source Tool for Deep Learning-Based Atherosclerotic Plaque Quantification in Histopathology Image. ATVB. Published online August 12, 2021. doi:10.1161/ATVBAHA.121.316124*
-
-The analysis files associated with the above mentioned paper can be found here.
-
 ___
 
 ## Table of Contents
@@ -29,7 +26,7 @@ git clone https://github.com/jacobmatthewmurray/vesseg.git
 ```
 2. Change directory into the app directory. 
 ```
-cd app/
+cd vesseg/app/
 ````
 3. Run helper script to build all `Docker` containers needed for the local installation (all except for "server"). This will take some time and requires `Docker` to have access to sufficient RAM resources.
 
@@ -71,7 +68,7 @@ To add a model, you must have admin privileges to your locally running vesseg pl
 ## FAQ
 1. Questions? Please feel free to direct them at jacobmatthewmurray at gmail dot com
 
-
+The analysis files associated with the above mentioned paper can be found [here](https://github.com/jacobmatthewmurray/vesseg-analysis.git).
 
 
 
