@@ -12,7 +12,7 @@ class ProdConfig:
     DATA_PATH = environ.get('DATA_PATH', '/data')
     REDIS_URL = environ.get('REDIS_URL') 
     REDIS_QUEUE = environ.get('REDIS_QUEUE', 'vesseg')
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + path.join(DATA_PATH, 'db', 'vesseg.db')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + path.join(DATA_PATH, 'vesseg.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False
 
@@ -23,12 +23,12 @@ class DevConfig:
 
     SECRET_KEY = 'secret_key'
 
-    DATA_PATH = '/Users/jacobmurray/projects/vesseg/data'
+    DATA_PATH = '/path/to/data'
     
     REDIS_URL = 'redis://'
     REDIS_QUEUE = 'vesseg'
 
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + path.join(DATA_PATH, 'db', 'vesseg.db')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + path.join(DATA_PATH, 'vesseg.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = True
 
