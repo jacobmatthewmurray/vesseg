@@ -15,8 +15,10 @@ from matplotlib.colors import Normalize as mpl_norm
 from PIL import Image
 from PIL.PngImagePlugin import PngInfo
 from pathlib import Path
+from functools import reduce
 import xml.etree.ElementTree as ET
 from utils.vesseg_logger import VessegLogger
+
 
 
 def walk_directory_to_files(input_directory, file_select_fxn=lambda x: x.endswith('.png')):
@@ -207,8 +209,8 @@ def analyzer(input_folder, kwargs):
     df_image = pd.DataFrame(image_info)
     df_mask = pd.DataFrame(mask_info)
 
-    df = df_image.merge(df_meta, how='left', on='image')
-    df = df.merge(df_mask, how='left', on='image')
+    dfs = [i for i in [df_meta, df_image, df_mask] if not i.empty]
+    df = reduce(lambda df1, df2: pd.merge(df1, df2, on='image', how='left'), dfs)
 
     df.to_csv(Path(analysis_path, predictionmodel_name + '_analysis.csv'), index=False)
         
