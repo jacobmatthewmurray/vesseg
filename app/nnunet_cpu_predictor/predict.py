@@ -16,6 +16,7 @@
 import argparse
 from copy import deepcopy
 from typing import Tuple, Union, List
+import os
 
 import numpy as np
 from batchgenerators.augmentations.utils import resize_segmentation
@@ -31,9 +32,7 @@ from nnunet.training.model_restore import load_model_and_checkpoint_files
 from nnunet.training.network_training.nnUNetTrainer import nnUNetTrainer
 from nnunet.utilities.one_hot_encoding import to_one_hot
 
-### VESSEG ###
-from .vesseg_logger import VessegLogger
-##############
+
 
 def preprocess_save_to_queue(preprocess_fn, q, list_of_lists, output_files, segs_from_prev_stage, classes,
                              transpose_forward):
@@ -203,16 +202,14 @@ def predict_cases(model, list_of_lists, output_filenames, folds, save_npz, num_t
                                              segs_from_prev_stage)
     
     
-    vl = VessegLogger()
-    vl.p(log_type='info', message=f'Starting conversion, {len(list_of_lists)} files found.')
-    vl.p(log_type='status', message=0)
+    print({"log_type":"info", "message":f"Starting conversion, {len(list_of_lists)} files found."}, flush=True)
+    print({"log_type":"status", "message":"0"}, flush=True)
 
     print("starting prediction...")
     all_output_files = []
     for vesseg_counter, preprocessed in enumerate(preprocessing, start=1):
 
-
-        vl.p(log_type='status', message=f'{round(vesseg_counter/len(list_of_lists),4)}')
+        print({"log_type":"status", "message":f"{round(vesseg_counter/len(list_of_lists),4)}"}, flush=True)
 
         output_filename, (d, dct) = preprocessed
         all_output_files.append(all_output_files)
@@ -295,7 +292,7 @@ def predict_cases(model, list_of_lists, output_filenames, folds, save_npz, num_t
     pool.close()
     pool.join()
 
-    vl.p(log_type='info', message=f'Prediction completed.')  
+    print({"log_type":"info", "message":f"Prediction completed."}, flush=True)
 
 
 def predict_cases_fast(model, list_of_lists, output_filenames, folds, num_threads_preprocessing,

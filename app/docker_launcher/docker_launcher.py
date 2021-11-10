@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 
-# Path hack.
-import sys, os
-sys.path.insert(0, os.path.abspath('..'))
-
+import os
 import docker
 import rq
 import argparse
@@ -11,7 +8,7 @@ import json
 import time
 import inspect
 from rq import get_current_job
-from utils.vesseg_logger import VessegLogger
+from vesseg_logger import VessegLogger
 
 
 def validate_redis_status(log: dict) -> bool:
@@ -54,39 +51,32 @@ def docker_launcher(container_name, data_directory, commands, redis=True):
                 print(e, flush=True) 
 
 
-
-def redis_test(word):
-    for w in word:
-        print(w)
-        time.sleep(1)
-    print(word)
-
 # if __name__ == "__main__":
 
 #     # For testing of the file type converter
-#     # container_name = 'file_type_converter:latest'
-#     # data_directory = '/Users/jacobmurray/projects/file_type_converter/data/'
-#     # commands = ['-i', '/data/raw', '-o', '/data/converted']
-    
-    # For testing of the nnunet_cpu_predictor
-    # container_name = 'nnunet_cpu_predictor:latest'
-    # data_directory = '/Users/jacobmurray/projects/vesseg/data/'
-    # commands = ['-i', '/data/projects/1/preprocessed', '-o', '/data/projects/1/predicted/nnunet_112/masks', '-m', '/data/models/nnUNet_trained_models', '-t', '112']
-    
-#     # For testing of the fastai_predictor
-#     container_name = 'fastai_predictor:latest'
+#     container_name = 'processor:latest'
 #     data_directory = '/Users/jacobmurray/projects/vesseg/data/'
-#     commands = ['-i', '/data/projects/1/preprocessed', '-o', '/data/projects/1/predicted/fastai_01/masks', '-m', '/data/models/fastai_01']
+#     commands = ['-i', '/data/projects/1/raw/pil/png', '-o', '/data/projects/1/preprocessed', '-f', 'resize']
+    
+#     # For testing of the nnunet_cpu_predictor
+#     # container_name = 'nnunet_cpu_predictor:latest'
+#     # data_directory = '/Users/jacobmurray/projects/vesseg/data/'
+#     # commands = ['-i', '/data/projects/1/preprocessed', '-o', '/data/projects/1/predicted/nnunet_112/masks', '-m', '/data/models/nnUNet_trained_models', '-t', '112']
+    
+# #     # For testing of the fastai_predictor
+# #     container_name = 'fastai_predictor:latest'
+# #     data_directory = '/Users/jacobmurray/projects/vesseg/data/'
+# #     commands = ['-i', '/data/projects/1/preprocessed', '-o', '/data/projects/1/predicted/fastai_01/masks', '-m', '/data/models/fastai_01']
 
-#     # For testing of the prepostprocessor
-    # container_name = 'processor:latest'
-    # data_directory = '/Users/jacobmurray/projects/vesseg/data/'
-    # db = "sqlite:////Users/jacobmurray/projects/vesseg/data/db/vesseg.db"
-    # commands = ['-f', 'analyzer', '-i', '/data/projects/1', '-o', '', '-k', '{"project_id": "1", "predictionmodel_id": "1", "predictionmodel_name": "fastai_01"}']
+# #     # For testing of the prepostprocessor
+#     # container_name = 'processor:latest'
+#     # data_directory = '/Users/jacobmurray/projects/vesseg/data/'
+#     # db = "sqlite:////Users/jacobmurray/projects/vesseg/data/db/vesseg.db"
+#     # commands = ['-f', 'analyzer', '-i', '/data/projects/1', '-o', '', '-k', '{"project_id": "1", "predictionmodel_id": "1", "predictionmodel_name": "fastai_01"}']
 
-    # docker_launcher(container_name, data_directory, commands, redis=False, db=db)
+#     docker_launcher(container_name, data_directory, commands, redis=False)
 
-#     # For testing as a worker
-#     # docker run -v /var/run/docker.sock:/var/run/docker.sock docker_launcher:latest -u redis://host.docker.internal:6379/0 vesseg
+# #     # For testing as a worker
+# #     # docker run -v /var/run/docker.sock:/var/run/docker.sock docker_launcher:latest -u redis://host.docker.internal:6379/0 vesseg
 
 

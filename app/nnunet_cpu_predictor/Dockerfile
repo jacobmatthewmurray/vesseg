@@ -7,10 +7,9 @@ RUN python3 -m pip install --upgrade pip && python3 -m pip install --upgrade Pil
 RUN pip3 install nnunet
 RUN mkdir /nnUNet_raw_data_base /nnUNet_preprocessed /data
 ENV nnUNet_raw_data_base="/nnUNet_raw_data_base" nnUNet_preprocessed="/nnUNet_preprocessed"
-COPY ./nnunet_cpu_predictor/neural_network.py /usr/local/lib/python3.6/dist-packages/nnunet/network_architecture/neural_network.py
-COPY ./nnunet_cpu_predictor/predict.py /usr/local/lib/python3.6/dist-packages/nnunet/inference/predict.py
-COPY ./utils/vesseg_logger.py /usr/local/lib/python3.6/dist-packages/nnunet/inference/vesseg_logger.py
-COPY ./nnunet_cpu_predictor/predict_from_png.py /app/nnunet_cpu_predictor/predict_from_png.py
+COPY ./neural_network.py /usr/local/lib/python3.6/dist-packages/nnunet/network_architecture/neural_network.py
+COPY ./predict.py /usr/local/lib/python3.6/dist-packages/nnunet/inference/predict.py
+COPY ./predict_from_png.py /app/nnunet_cpu_predictor/predict_from_png.py
 WORKDIR /app/nnunet_cpu_predictor
 ENTRYPOINT [ "python3", "predict_from_png.py" ]
 

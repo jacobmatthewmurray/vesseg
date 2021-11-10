@@ -1,14 +1,12 @@
-# Path hack.
-import sys, os
-sys.path.insert(0, os.path.abspath('..'))
+#!/usr/bin/env python
 
+import os
 from fastai.vision import *
 from PIL import Image as PILImage
 from pathlib import Path
 import warnings
 import argparse
 warnings.filterwarnings("ignore")
-from utils.vesseg_logger import VessegLogger
 
 
 def walk_directory_to_list(input_directory, val_fxn=lambda x: x.endswith('.png')):
@@ -31,10 +29,8 @@ def predict_fastai(input_directory, output_directory, model_directory, chunk_siz
     # Retrieve dataset for prediction
     data = SegmentationItemList.from_folder(input_directory)
 
-    # Generate logger
-    vl = VessegLogger()
-    vl.p(log_type='info', message=f'Starting fastai prediction, {len(data)} files found.')
-    vl.p(log_type='status', message='0')
+    print({"log_type": "info", "message": f"Starting fastai prediction, {len(data)} files found."}, flush=True)
+    print({"log_type": "status", "message": "0"}, flush=True)
 
     for k in range(0, len(data), chunk_size):
 
@@ -53,14 +49,14 @@ def predict_fastai(input_directory, output_directory, model_directory, chunk_siz
         all_labels = np.argmax(mean_preds, axis=1)
 
         for i in range(len(data_chunk)):
-            vl.p(log_type='status', message=f'{round((k+i+1)/len(data),4)}')
+            print({"log_type": "status", "message":f"{round((k+i+1)/len(data),4)}"}, flush=True)
 
             name, labels = data_chunk.items[i].name, all_labels[i, ...].astype('uint8')
             msk = PILImage.fromarray(labels)
             Path(output_directory).mkdir(parents=True, exist_ok=True)
             msk.save(os.path.join(output_directory, name), optimize=True)
 
-    vl.p(log_type='info', message=f'Stopping fastai prediction.')  
+    print({"log_type": "info", "message":f"Stopping fastai prediction."}, flush=True)
 
 
 if __name__ == "__main__":

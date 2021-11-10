@@ -4,10 +4,7 @@
 This code copies from and is heavily based on the nice PyPi module 'microscoper'.
 https://github.com/pskeshu/microscoper
 """
-
-# Path hack.
-import sys, os
-sys.path.insert(0, os.path.abspath('..'))
+import os
 
 import os
 import bioformats as bf
@@ -18,7 +15,6 @@ import argparse
 import datetime
 from pathlib import Path
 import json
-from utils.vesseg_logger import VessegLogger
 from PIL import Image
 
 
@@ -123,7 +119,6 @@ def converter(input_directory, output_directory, conversion_file_type: str, save
         Returns: None
     """
 
-    vl = VessegLogger()
     
     img_dir = os.path.join(output_directory)
     meta_dir = os.path.join(output_directory, 'metadata')
@@ -134,8 +129,8 @@ def converter(input_directory, output_directory, conversion_file_type: str, save
     make_logger()
     files = walk_directory_to_list(input_directory, lambda x: x.endswith(conversion_file_type) and 'temp' not in x)
 
-    vl.p(log_type='info', message=f'Starting conversion, {len(files)} files found.')
-    vl.p(log_type='status', message='0')
+    print({"log_type": "info", "message": f"Starting conversion, {len(files)} files found."}, flush=True)
+    print({"log_type": "status", "message":"0"}, flush=True)
 
     for i, file in enumerate(files, start=1):
 
@@ -156,11 +151,11 @@ def converter(input_directory, output_directory, conversion_file_type: str, save
                 file_pil = file_pil.replace('.{}'.format(save_file_type), '_{}.{}'.format(str(j), save_file_type))
                 save_images(image, file_pil, img_dir)
 
-        vl.p(log_type='status', message=f'{round(i/len(files),4)}')
+        print({"log_type": "status", "message": f"{round(i/len(files),4)}"}, flush=True)
 
     jb.kill_vm()
 
-    vl.p(log_type='info', message=f'Stopping conversion')  
+    print({"log_type":"info", "message":f"Stopping conversion"}, flush=True)
 
 if __name__ == '__main__':
 
