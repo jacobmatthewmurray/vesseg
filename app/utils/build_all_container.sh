@@ -8,5 +8,5 @@ do
     echo "***********************************************************************"
     echo "***** Building container $container !"
     echo "***********************************************************************"
-    docker build -t "$container":latest -f "$container"/Dockerfile .
+    docker build -t "$container":latest -f "$container"/Dockerfile ./"$container"
 done 

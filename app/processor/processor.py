@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 
-# Path hack.
-import sys, os
-sys.path.insert(0, os.path.abspath('..'))
-
-# Import 
+import os
 import numpy as np
 import pandas as pd
 import os
@@ -17,7 +13,6 @@ from PIL.PngImagePlugin import PngInfo
 from pathlib import Path
 from functools import reduce
 import xml.etree.ElementTree as ET
-from utils.vesseg_logger import VessegLogger
 
 
 
@@ -34,7 +29,7 @@ def walk_directory_to_files(input_directory, file_select_fxn=lambda x: x.endswit
     return file_list
 
 
-def create_overlay(img, dest, vl, num_labels=3, color_map='viridis', alpha=0.3):
+def create_overlay(img, dest, num_labels=3, color_map='viridis', alpha=0.3):
 
     Path(dest).mkdir(parents=True, exist_ok=True)
     file_name = Path(img).name
@@ -57,7 +52,7 @@ def create_overlay(img, dest, vl, num_labels=3, color_map='viridis', alpha=0.3):
     ol_img.save(Path(dest)/ Path(img).name, optimize=True)
 
 
-def resize(img, dest, vl, new_size=(512,512), new_file_type='.png'):
+def resize(img, dest, new_size=(512,512), new_file_type='.png'):
     
     file_name = Path(img).stem
     Path(dest).mkdir(parents=True, exist_ok=True)
@@ -80,7 +75,7 @@ def resize(img, dest, vl, new_size=(512,512), new_file_type='.png'):
         resized_img.save(os.path.join(dest, file_name + '.' + new_file_type.replace('.', '')))
 
         
-def convert_mode(img, dest, vil, new_mode='RGB', new_file_type='.png'):
+def convert_mode(img, dest, new_mode='RGB', new_file_type='.png'):
     file_name = Path(img).stem
     Path(dest).mkdir(parents=True, exist_ok=True)
     img = Image.open(img)
@@ -88,7 +83,7 @@ def convert_mode(img, dest, vil, new_mode='RGB', new_file_type='.png'):
     converted_img.save(os.path.join(dest, file_name + '.' + new_file_type.replace('.', '')))
 
 
-def pil_to_png(img, dest, vil):
+def pil_to_png(img, dest):
     file_name = Path(img).stem
     Path(dest).mkdir(parents=True, exist_ok=True)
     img = Image.open(img)
@@ -100,16 +95,14 @@ def processor(processor_fxn, input_folder, output_folder, kwargs):
 
     file_list = walk_directory_to_files(input_folder)
 
-    # Generate logger
-    vl = VessegLogger()
-    vl.p(log_type='info', message=f'Starting processing with {processor_fxn.__name__}, {len(file_list)} files found.')
-    vl.p(log_type='status', message='0')
+    print({"log_type":"info", "message":f"Starting processing with {processor_fxn.__name__}, {len(file_list)} files found."}, flush=True)
+    print({"log_type":"status", "message":"0"}, flush=True)
 
     for i, f in enumerate(file_list, start=1):
-        vl.p(log_type='status', message=f'{round(i/len(file_list),4)}')
-        processor_fxn(f, output_folder, vl, **kwargs)
+        print({"log_type":"status", "message":f"{round(i/len(file_list),4)}"}, flush=True)
+        processor_fxn(f, output_folder, **kwargs)
 
-    vl.p(log_type='info', message=f'Stopping processing with {processor_fxn.__name__}.')  
+    print({"log_type":"info", "message":f"Stopping processing with {processor_fxn.__name__}."}, flush=True)
 
 
 def get_um_length_from_metadata(metadata_xml):
@@ -139,11 +132,11 @@ def get_um_length_from_metadata(metadata_xml):
 
 def analyzer(input_folder, kwargs):
 
-    vl = VessegLogger()
+    
     predictionmodel_name = kwargs.get('predictionmodel_name')
 
     if not predictionmodel_name:
-        vl.p(log_type='error', message='Analyzer called without predictionmodel_name')
+        print({"log_type":"error", "message":f"Analyzer called without predictionmodel_name."}, flush=True)
         return None
 
     # Determine number of files to analyze
@@ -158,14 +151,14 @@ def analyzer(input_folder, kwargs):
     masks = walk_directory_to_files(mask_path, lambda x: x.endswith('.png'))   
     total_files = len(meta_data) + len(images) + len(masks)
 
-    vl.p(log_type='info', message=f'Starting processing, {total_files} files found.')
+    print({"log_type":"info", "message":f"Starting processing, {total_files} files found."}, flush=True)
     
     if total_files==0:
         return None
 
     meta_info = []
     for c, i in enumerate(meta_data, start=1): 
-        vl.p(log_type='status', message=f'{round(c/total_files,4)}')
+        print({"log_type":"status", "message":f"{round(c/total_files,4)}"}, flush=True)
         image = Path(i).stem
         xml_dict= get_um_length_from_metadata(i)
         meta_info.append({
@@ -178,7 +171,7 @@ def analyzer(input_folder, kwargs):
 
     image_info = []
     for c, i in enumerate(images, start=len(meta_data)+1):
-        vl.p(log_type='status', message=f'{round(c/total_files,4)}')
+        print({"log_type":"status", "message":f"{round(c/total_files,4)}"}, flush=True)
         image = Path(i).stem
         img = Image.open(i)
         image_info.append({
@@ -191,7 +184,7 @@ def analyzer(input_folder, kwargs):
 
     mask_info = []
     for c, i in enumerate(masks, start=len(meta_data)+len(images)+1):
-        vl.p(log_type='status', message=f'{round(c/total_files,4)}')
+        print({"log_type":"status", "message":f"{round(c/total_files,4)}"}, flush=True)
         mask = Path(i).stem
         msk_arr = np.array(Image.open(i))
         background_pixels = int(np.sum(msk_arr == 0))
@@ -214,7 +207,7 @@ def analyzer(input_folder, kwargs):
 
     df.to_csv(Path(analysis_path, predictionmodel_name + '_analysis.csv'), index=False)
         
-    vl.p(log_type='info', message=f'Processing complete.')
+    print({"log_type":"info", "message":"Processing completed."}, flush=True)
 
 
 if __name__=="__main__":
