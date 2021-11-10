@@ -87,36 +87,36 @@ def data():
     form = UploadForm()
     form.project_id.choices = [(p.id, p.project) for p in Project.query.filter_by(user_id=current_user.id).all()]
     if request.method == 'POST':
-
         bio_img_formats = ['.vsi', '.ets'] 
         pil_img_formats = ['.png', '.jpg', '.jpeg', '.tif', '.tiff']     
-
         project_id = int(request.form['project_id'])
-        src_path = Path(str(request.form['path']))
-        suffix = str(src_path.suffix)
-        stem_pretty = str(src_path.stem).replace('.', '_').replace(' ', '_')
-        parent_pretty = str(src_path.parent).replace('.', '_').replace(' ', '_')
+        file_path = request.form.get('file_path')
+        file_path = request.files['file'].filename if file_path == 'undefined' else file_path
+        file_parent = str(Path(file_path).parent).replace('.', '_').replace(' ', '_')
+        file_stem = str(Path(file_path).stem).replace('.', '_').replace(' ', '_')
+        file_suffix = str(Path(file_path).suffix)
+        file_path = os.path.join(file_parent, file_stem + file_suffix)
 
         # Save file on disk
-        if suffix not in bio_img_formats+pil_img_formats:
+        if file_suffix not in bio_img_formats+pil_img_formats:
             return "File format not supported", 400
-        elif suffix in bio_img_formats:
+        elif file_suffix in bio_img_formats:
             cat = 'bio'
-        elif suffix in pil_img_formats:
+        elif file_suffix in pil_img_formats:
             cat = 'pil'
         
-        save_path = get_project_path(project_id) / 'raw' / cat / parent_pretty / (stem_pretty + suffix)
-        save_path.parent.mkdir(exist_ok=True, parents=True)
+        save_path = os.path.join(get_project_path(project_id), 'raw', cat, file_path)
+        Path(save_path).parent.mkdir(exist_ok=True, parents=True)
         for f in request.files.getlist('file'):
             f.save(save_path)
 
         # Create database entry
-        if not suffix == '.ets':
-            if not Image.query.filter_by(project_id=project_id, image=stem_pretty).all():
-                new_image = Image(project_id=project_id, image=stem_pretty, upload_file_type=suffix)
+        if not file_suffix == '.ets':
+            if not Image.query.filter_by(project_id=project_id, image=file_stem).all():
+                new_image = Image(project_id=project_id, image=file_stem, upload_file_type=file_suffix)
                 db.session.add(new_image)
                 db.session.commit()
-
+        
     return render_template('main/data.html', form=form)
 
 

@@ -4,186 +4,32 @@
 
     <div class="display-3">{% block title %}data{% endblock title %}</div>
     <br>
-    <p>First, select project from drop-down for which you want to add data. Then, click 'browse' to choose image files or folders. Finally, click 'upload'. To clear your upload list, click 'clear'. This will not remove files already uploaded to the server.</p>
+    <p>First, select project from drop-down for which you want to add data. Then, drag-and-drop the folder into the file dropzone. (To upload an entire folder, use drag-and-drop not the file-picker pop-up.)</p>
     <br>
-
-
 
     {{ form.project_id.label(class_='sr-only')}}
     {{ form.project_id(class_='custom-select') }}
 
     <br><br>
 
-    <div class="input-group">
-      <div class="custom-file">
-        <input type="file" class="custom-file-input" id="files" name="files[]" webkitdirectory/>​
-        <label class="custom-file-label" for="files">Choose files / directories... </label>
-      </div>
-      <div class="input-group-append">
-          <button class="btn btn-outline-secondary" type="button" id="upload-button">upload</button>
-          <button class="btn btn-outline-secondary" type="button" id="clear-button">clear</button>
-      </div>
-    </div>
+    <script>
+        Dropzone.options.myDropzone = {
+          headers: {'X-CSRF-TOKEN': "{{ csrf_token() }}"},
+          paramName: "file",
+          init: function() {
+                this.on("sending", function(file, xhr, formData) {
+                    formData.append("file_path", file.fullPath);
+                    formData.append("project_id", document.getElementById("project_id").options[document.getElementById("project_id").selectedIndex].value);
+                });
+            }
+        }
+    </script>
 
-
-    <br>
-    <div class="progress" id="upload-progress" style="visibility: hidden">
-      <div class="progress-bar" id="upload-progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-        <span class="sr-only"></span>
-      </div>
-    </div>
-
-    <br>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">file</th>
-                <th scope="col">size</th>
-                <th scope="col">status</th>
-            </tr>
-        </thead>
-        <tbody id="upload-table">
-        </tbody>
-    </table>
-
+    <form action="{{ url_for('main.data') }}" class="dropzone" id="my-dropzone">
+    </form>
 
 {% endblock %}
 
 
 {% block script %}
-
-    <script>
-
-        var csrf_token = "{{ csrf_token() }}";
-
-        $.ajaxSetup({
-
-        });
-
-        let files;
-
-        function formatBytes(bytes, decimals = 2) {
-            if (bytes === 0) return '0 Bytes';
-
-            const k = 1024;
-            const dm = decimals < 0 ? 0 : decimals;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-        };
-
-        function addUploadTableRow(row_number, file, size, status){
-            var upload_table = document.getElementById('upload-table');
-            var row = upload_table.insertRow(-1);
-            row.insertCell(0).innerHTML = row_number;
-            row.insertCell(1).innerHTML = file;
-            row.insertCell(2).innerHTML = size;
-            var status_lamp_cell = row.insertCell(3);
-            status_lamp_cell.innerHTML = "<span style=\"width: 25px; height: 25px; border-radius: 50%; background-color: #e9ecef; display: inline-block\"></span>";
-            status_lamp_cell.firstChild.id = "status_lamp_" + String(row_number);
-        };
-
-        function clearUploadTable(){
-            document.getElementById('files').value = "";
-            document.getElementById('upload-table').innerHTML = "";
-            document.getElementById('upload-progress-bar').style.width = "0%";
-        }
-
-        $('#clear-button').click(function () {
-            clearUploadTable();
-        });
-
-        $('#files').change(function (e) {
-            document.getElementById('upload-table').innerHTML = "";
-            document.getElementById('upload-progress-bar').style.width = "0%";
-            files = e.target.files;
-            if (files.length > 0) {
-                var progress = document.getElementById('upload-progress');
-                progress.style.visibility = "visible";
-            }
-            for (i=0; i < files.length; i++){
-                addUploadTableRow(i+1, files[i].name, formatBytes(files[i].size), 'wait');
-            };
-        });
-
-
-        $('#upload-button').click(function () {
-
-            var project_id_elem = document.getElementById("project_id");
-            var project_id = project_id_elem.options[project_id_elem.selectedIndex].value;
-            var items = [];
-
-            for (i=0; i<files.length; i++) {
-                var new_form = new FormData()
-                new_form.append('file', files[i])
-                new_form.append('path', files[i].webkitRelativePath);
-                new_form.append('project_id', project_id);
-                items.push(new_form)
-            };
-
-            // function to trigger the ajax call
-            var ajax_request = function(item, i) {
-                var deferred = $.Deferred();
-
-                $.ajax({
-                    beforeSend: function(xhr, settings) {
-                        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-                            xhr.setRequestHeader("X-CSRFToken", csrf_token);
-                        }
-                    },
-                    type: "POST",
-                    url: '/data',
-                    data: item,
-                    contentType: false,
-                    processData: false,
-                    success: function (data) {
-                        var progress_bar = document.getElementById('upload-progress-bar');
-                        var progress = parseInt((i+1)/files.length * 100);
-                        progress_bar.style.width = String(progress) + "%";
-                        var status_lamp = document.getElementById('status_lamp_' + String(i+1));
-                        status_lamp.style.backgroundColor = "#007bff";
-                        // mark ajax call as completed
-                        deferred.resolve(data);
-                    },
-                    error: function (error) {
-                        var status_lamp = document.getElementById('status_lamp_' + String(i+1));
-                        status_lamp.style.backgroundColor = "red";
-                        // mark the ajax call as failed
-                        deferred.reject(error);
-                    }
-                });
-
-                return deferred.promise();
-            };
-
-            var looper = $.Deferred().resolve();
-
-            // go through each item and call the ajax function
-            $.when.apply($, $.map(items, function(item, i) {
-              looper = looper.then(function() {
-
-                // trigger ajax call with item data
-                return ajax_request(item, i);
-              });
-
-              return looper;
-            })).then(function() {
-              // run this after all ajax calls have completed
-              console.log('all uploads completed!');
-            });
-
-        });
-
-
-
-
-
-    </script>
-
-
-
 {% endblock %}
