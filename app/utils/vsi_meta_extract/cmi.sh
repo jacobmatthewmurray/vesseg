@@ -4,11 +4,8 @@ echo "***********************************************************************"
 echo "***** Combining meta data info"
 echo "***********************************************************************"
 
-echo "***********************************************************************"
-echo "***** Building necessary containers"
-echo "***********************************************************************"
-
-docker build -t processor:latest -f processor/Dockerfile https://github.com/jacobmatthewmurray/vesseg.git#:app
+docker build -t cmi:latest .
+docker build -t file_type_converter:latest  ../../file_type_converter
 
 
 echo "Enter path to analysis folder:"
@@ -19,14 +16,5 @@ echo "Enter path to .vsi folder:"
 read CMI_VIS_FOLDER
 
 
-
-
-
-
-for container in "$@"
-do
-    echo "***********************************************************************"
-    echo "***** Building container $container !"
-    echo "***********************************************************************"
-    docker build -t "$container":latest -f "$container"/Dockerfile .
-done 
+docker run -v $CMI_VIS_FOLDER:$CMI_VIS_FOLDER -v $CMI_OUTPUT_FOLDER:$CMI_OUTPUT_FOLDER file_type_converter:latest -i $CMI_VIS_FOLDER -o $CMI_OUTPUT_FOLDER
+docker run -v $CMI_VIS_FOLDER:$CMI_VIS_FOLDER -v $CMI_OUTPUT_FOLDER:$CMI_OUTPUT_FOLDER cmi:latest -a $CMI_ANALYSIS_FOLDER -o $CMI_OUTPUT_FOLDER
