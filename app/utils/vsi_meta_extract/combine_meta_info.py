@@ -49,8 +49,14 @@ def combine(analysis_dir: str, output_dir: str):
 
     als = walk_directory_to_files(analysis_dir, lambda x: x.endswith('.csv'))
     dfs = [pd.read_csv(a) for a in als]
+
+    assert len(dfs)>0, f'No analysis files in {analysis_dir}. Analysis files are needed.'
+
     models = [a.split('/')[-1].replace('_analysis.csv', '') for a in als if not a.startswith('evaluation')]
-    df = reduce(lambda l,r: pd.merge(l,r,on='image', how='inner'), dfs)
+    if len(dfs)>1:
+        df = reduce(lambda l,r: pd.merge(l,r,on='image', how='inner'), dfs)
+    else:
+        df = dfs[0]
 
     mds = walk_directory_to_files(output_dir, lambda x: x.endswith('.xml'))
     mds = [m for m in mds if '/metadata/' in m]
