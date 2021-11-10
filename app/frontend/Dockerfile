@@ -1,5 +1,5 @@
 FROM python:3.8-slim
-COPY ./frontend/requirements.txt /frontend/requirements.txt
+COPY ./requirements.txt /frontend/requirements.txt
 RUN pip install -r /frontend/requirements.txt && pip install gunicorn
 
 RUN mkdir /data
